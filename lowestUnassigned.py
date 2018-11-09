@@ -13,7 +13,6 @@ def main(list):
 
 		if current - prev > 1:
 			return prev + 1
-		current += 1
 
 list = [1,2,3,5]
 list2 = [1,2,3,4,5,6,7,8,9,11]
