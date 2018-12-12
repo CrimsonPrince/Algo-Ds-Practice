@@ -3,7 +3,7 @@ from pymongo import MongoClient
 
 client = MongoClient()
 db=client.airplane_crashes
-cursor = db.main2
+cursor = db.newFormat
 
 result = cursor.find()
 
@@ -13,4 +13,4 @@ data = {}
 result = cursor.find({},{'_id' : 0})
 
 for row in result:
-	print(row)
+	pprint(row)
