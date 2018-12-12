@@ -5,17 +5,30 @@ client = MongoClient()
 db=client.airplane_crashes
 
 df = pd.read_csv("Airplane_Crashes_and_Fatalities_Since_1908.csv") #csv file which you want to import
-records_ = df.to_dict(orient = 'records')
-for key, items in records.items():
-	print(items['Date'])
+records = df.to_dict(orient = 'records')
 
-"""data = {}
+data = {}
 plane = {}
+crash = {}
+deaths = {}
 
-data['Date'] = 12
-data['Name'] = "Arthur"
-plane['age'] = 10
-plane['Year'] = 1194
-data['Plane'] = plane
+for items in records:
+	data['flight_Number'] = items['Flight #']
+	data['route'] = items['Route']
+	data['operator'] = items['Operator']
+	data['aboard'] = items['Aboard']
 
-result = db.main2.insert_one(data)"""
+	plane['type'] = items['Type']
+	plane['cnin'] = items['cn/In']
+	plane['registration'] = items['Registration']
+	data['Plane'] = plane
+
+	crash['date'] = items['Date']
+	crash['Time'] = items['Time']
+	crash['location'] = items['Location']
+	deaths['in_Air'] = items['Fatalities']
+	deaths['on_Ground'] = items['Ground']
+
+	crash['deaths'] = deaths
+	data['crash'] = crash
+	print(data)
