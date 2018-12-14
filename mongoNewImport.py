@@ -2,6 +2,7 @@ import pymongo
 from pymongo import MongoClient
 import pandas as pd
 from pprint import pprint
+import math
 client = MongoClient()
 db=client.airplane_crashes
 
@@ -9,7 +10,11 @@ if client.drop_database('airplane_crashes'):
 	print("Dropped Old Table")
 
 df = pd.read_csv("Airplane_Crashes_and_Fatalities_Since_1908.csv") #csv file which you want to import
+df['Operator'] = df['Operator'].fillna("Unknown")
 records = df.to_dict(orient = 'records')
+operatorDict = {}
+i = 0
+
 
 for items in records:
 	crash = {}
@@ -17,9 +22,13 @@ for items in records:
 	operator = {}
 	planeList = []
 
+
+	if str(items['Operator']) not in operatorDict:
+		operatorDict[items['Operator']] = list()
+
+	operator['operator'] = items['Operator']
 	crash['flight_Number'] = items['Flight #']
 	crash['route'] = items['Route']
-	operator['operator'] = items['Operator']
 	crash['aboard'] = items['Aboard']
 	crash['summary'] = items['Summary']
 
@@ -38,10 +47,16 @@ for items in records:
 
 	operator['crash'] = crash
 
-	try:
-		db.newFormat.insert(operator)
-	except pymongo.errors.BulkWriteError as e:
-		print(e.details['writeErrors'])
+
+	operatorDict[items['Operator']].append(operator)
+
+
+try:
+	db.newFormat.insert(operatorDict, check_keys=False)
+except pymongo.errors.BulkWriteError as e:
+	print(e.details['writeErrors'])
+
+pprint(db.newFormat.find_one({}, {'_id':0}))
 
 #for i in insertionList:
 	#print(i)
