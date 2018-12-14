@@ -10,27 +10,23 @@ if client.drop_database('airplane_crashes'):
 
 df = pd.read_csv("Airplane_Crashes_and_Fatalities_Since_1908.csv") #csv file which you want to import
 records = df.to_dict(orient = 'records')
-
-
-i = 0
 insertionList = list()
 
 for items in records:
-	data = {}
-	plane = {}
 	crash = {}
 	deaths = {}
+	operator = {}
 
-	data['flight_Number'] = items['Flight #']
-	data['route'] = items['Route']
-	data['operator'] = items['Operator']
-	data['aboard'] = items['Aboard']
-	data['summary'] = items['Summary']
+	crash['flight_Number'] = items['Flight #']
+	crash['route'] = items['Route']
+	operator['operator'] = items['Operator']
+	crash['aboard'] = items['Aboard']
+	crash['summary'] = items['Summary']
 
-	plane['type'] = items['Type']
-	plane['cnin'] = items['cn/In']
-	plane['registration'] = items['Registration']
-	data['Plane'] = plane
+	crash['type'] = items['Type']
+	crash['cnin'] = items['cn/In']
+	crash['registration'] = items['Registration']
+	operator['crash'] = crash
 
 	crash['date'] = items['Date']
 	crash['Time'] = items['Time']
@@ -39,12 +35,14 @@ for items in records:
 	deaths['on_Ground'] = items['Ground']
 
 	crash['deaths'] = deaths
-	data['crash'] = crash
+	operator['crash'] = crash
 
-	try:
-		db.newFormat.insert_one(data)
-	except pymongo.errors.BulkWriteError as e:
-		print(e.details['writeErrors'])
+	insertionList.append(operator)
+
+try:
+	db.newFormat.insert_many(insertionList)
+except pymongo.errors.BulkWriteError as e:
+	print(e.details['writeErrors'])
 
 #for i in insertionList:
 	#print(i)
