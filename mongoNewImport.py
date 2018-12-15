@@ -50,11 +50,12 @@ for items in records:
 
 	operatorDict[items['Operator']].append(operator)
 
-
-try:
-	db.newFormat.insert(operatorDict, check_keys=False)
-except pymongo.errors.BulkWriteError as e:
-	print(e.details['writeErrors'])
+for val in operatorDict.items():
+	pprint(val)
+	try:
+		db.newFormat.insert_many(val)
+	except pymongo.errors.BulkWriteError as e:
+		print(e.details['writeErrors'])
 
 pprint(db.newFormat.find_one({}, {'_id':0}))
 
