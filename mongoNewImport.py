@@ -26,31 +26,14 @@ for items in records:
 		spareDict['Crash'] = list()
 		operatorDict.append(items['Operator'])
 		operatorList.append(spareDict)
+	output = db.newFormat.replace_one({"Operator": items['Operator']},insertDict)
+
+
 
 try:
 	result = db.newFormat.insert(operatorList)
 except pymongo.errors.BulkWriteError as e:
 	print(e.details['writeErrors'])
-
-result = db.newFormat.find()
-
-for items in records:
-	crash = {}
-	crash['type'] = items['Type']
-	crash['location'] = items['Location']
-	crash['date'] = items['Date']
-
-	for row in result:
-		if row['Operator'] is items['Operator']:
-			row['Crash'].append(crash)
-		print(row['Operator'])
-
-
-
-	db.newFormat.insert(crash)
-
-
-
 
 pprint(db.newFormat.find_one())
 
