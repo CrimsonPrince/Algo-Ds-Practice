@@ -2,6 +2,7 @@ import pymongo
 from pymongo import MongoClient
 import pandas as pd
 from pprint import pprint
+from bson import *
 
 
 client = MongoClient()
@@ -13,16 +14,25 @@ if client.drop_database('airplane_crashes'):
 df = pd.read_csv("Airplane_Crashes_and_Fatalities_Since_1908.csv") #csv file which you want to import
 df['Operator'] = df['Operator'].fillna("Unknown")
 records = df.to_dict(orient = 'records')
-operatorDict = {}
+operatorDict = []
+spareDict = {}
+operatorList = []
 
 
 for items in records:
-	operatorDict = {}
-	operatorDict['Operator'] = items['Operator']
-	try:
-		db.newFormat.insert(operatorDict)
-	except pymongo.errors.BulkWriteError as e:
-		print(e.details['writeErrors'])
+	if items['Operator'] not in operatorDict:
+		spareDict = {}
+		spareDict['Operator'] = items['Operator']
+		spareDict['Crash'] = list()
+		operatorDict.append(items['Operator'])
+		operatorList.append(spareDict)
+
+try:
+	result = db.newFormat.insert(operatorList)
+except pymongo.errors.BulkWriteError as e:
+	print(e.details['writeErrors'])
+
+result = db.newFormat.find()
 
 for items in records:
 	crash = {}
@@ -30,10 +40,14 @@ for items in records:
 	crash['location'] = items['Location']
 	crash['date'] = items['Date']
 
-	myquery = { "Operator": items['Operator'] }
-	newvalues = { "$set": { "Crash": crash } }
+	for row in result:
+		if row['Operator'] is items['Operator']:
+			row['Crash'].append(crash)
+		print(row['Operator'])
 
-	db.newFormat.update_one(myquery, newvalues)
+
+
+	db.newFormat.insert(crash)
 
 
 
