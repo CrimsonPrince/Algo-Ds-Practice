@@ -1,0 +1,63 @@
+import pymongo
+from pymongo import MongoClient
+import pandas as pd
+from pprint import pprint
+import math
+client = MongoClient()
+db=client.airplane_crashes
+
+if client.drop_database('airplane_crashes'):
+	print("Dropped Old Table")
+
+df = pd.read_csv("Airplane_Crashes_and_Fatalities_Since_1908.csv") #csv file which you want to import
+df['Operator'] = df['Operator'].fillna("Unknown")
+records = df.to_dict(orient = 'records')
+operatorDict = {}
+i = 0
+
+
+for items in records:
+	crash = {}
+	plane = {}
+	operator = {}
+	planeList = []
+
+
+	if str(items['Operator']) not in operatorDict:
+		operatorDict[items['Operator']] = list()
+
+	#operator['operator'] = items['Operator']
+	crash['flight_Number'] = items['Flight #']
+	crash['route'] = items['Route']
+	crash['aboard'] = items['Aboard']
+	crash['summary'] = items['Summary']
+
+	plane['type'] = items['Type']
+	plane['cnin'] = items['cn/In']
+	plane['registration'] = items['Registration']
+	planeList.append(plane)
+	crash['Plane'] = planeList
+	operator['crash'] = crash
+
+	crash['date'] = items['Date']
+	crash['Time'] = items['Time']
+	crash['location'] = items['Location']
+	crash['in_Air'] = items['Fatalities']
+	crash['on_Ground'] = items['Ground']
+
+	operator['crash'] = crash
+
+
+	operatorDict[items['Operator']].append(operator)
+
+for val in operatorDict.items():
+	test = dict(crash = val)
+	try:
+		db.newFormat.insert_many(dict)
+	except pymongo.errors.BulkWriteError as e:
+		print(e.details['writeErrors'])
+
+pprint(db.newFormat.find({}, {'_id':0}))
+
+#for i in insertionList:
+	#print(i)
