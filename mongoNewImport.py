@@ -16,57 +16,28 @@ operatorDict = {}
 
 
 for items in records:
-	crash = {}
-	plane = {}
-	operator = {}
-	planeList = []
 	operatorDict = {}
-
-
-	if str(items['Operator']) not in operatorDict:
-		operatorDict['Operator'] = items['Operator']
-		try:
-			db.newFormat.insert(operatorDict)
-		except pymongo.errors.BulkWriteError as e:
-			print(e.details['writeErrors'])
-
-	operator['operator'] = items['Operator']
-	crash['flight_Number'] = items['Flight #']
-	crash['route'] = items['Route']
-	crash['aboard'] = items['Aboard']
-	crash['summary'] = items['Summary']
-
-	plane['type'] = items['Type']
-	plane['cnin'] = items['cn/In']
-	plane['registration'] = items['Registration']
-	planeList.append(plane)
-	crash['Plane'] = planeList
-	operator['crash'] = crash
-
-	crash['date'] = items['Date']
-	crash['Time'] = items['Time']
-	crash['location'] = items['Location']
-	crash['in_Air'] = items['Fatalities']
-	crash['on_Ground'] = items['Ground']
-
-	operator['crash'] = crash
-
-	"""try:
-		db.newFormat.insert_many(crash)
+	operatorDict['Operator'] = items['Operator']
+	try:
+		db.newFormat.insert(operatorDict)
 	except pymongo.errors.BulkWriteError as e:
 		print(e.details['writeErrors'])
 
+for items in records:
+	crash = {}
+	crash['type'] = items['Type']
+	crash['location'] = items['Location']
+	crash['date'] = items['Date']
 
-	operatorDict[items['Operator']].append(operator)
+	myquery = { "Operator": items['Operator'] }
+	newvalues = { "$set": { "Crash": crash } }
 
-for val in operatorDict.items():
-	pprint(val)
-	try:
-		db.newFormat.insert_many(val)
-	except pymongo.errors.BulkWriteError as e:
-		print(e.details['writeErrors'])"""
+	db.newFormat.update_one(myquery, newvalues)
 
-pprint(list(db.newFormat.find({}, {'_id':0})))
+
+
+
+pprint(db.newFormat.find_one())
 
 #for i in insertionList:
 	#print(i)
