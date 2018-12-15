@@ -13,7 +13,6 @@ df = pd.read_csv("Airplane_Crashes_and_Fatalities_Since_1908.csv") #csv file whi
 df['Operator'] = df['Operator'].fillna("Unknown")
 records = df.to_dict(orient = 'records')
 operatorDict = {}
-i = 0
 
 
 for items in records:
@@ -21,10 +20,15 @@ for items in records:
 	plane = {}
 	operator = {}
 	planeList = []
+	operatorDict = {}
 
 
 	if str(items['Operator']) not in operatorDict:
-		operatorDict[items['Operator']] = list()
+		operatorDict['Operator'] = items['Operator']
+		try:
+			db.newFormat.insert(operatorDict)
+		except pymongo.errors.BulkWriteError as e:
+			print(e.details['writeErrors'])
 
 	operator['operator'] = items['Operator']
 	crash['flight_Number'] = items['Flight #']
@@ -47,6 +51,11 @@ for items in records:
 
 	operator['crash'] = crash
 
+	"""try:
+		db.newFormat.insert_many(crash)
+	except pymongo.errors.BulkWriteError as e:
+		print(e.details['writeErrors'])
+
 
 	operatorDict[items['Operator']].append(operator)
 
@@ -55,9 +64,9 @@ for val in operatorDict.items():
 	try:
 		db.newFormat.insert_many(val)
 	except pymongo.errors.BulkWriteError as e:
-		print(e.details['writeErrors'])
+		print(e.details['writeErrors'])"""
 
-pprint(db.newFormat.find_one({}, {'_id':0}))
+pprint(list(db.newFormat.find({}, {'_id':0})))
 
 #for i in insertionList:
 	#print(i)
