@@ -2,7 +2,8 @@ import pymongo
 from pymongo import MongoClient
 import pandas as pd
 from pprint import pprint
-import math
+
+
 client = MongoClient()
 db=client.airplane_crashes
 
