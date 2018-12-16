@@ -50,7 +50,8 @@ for items in records:
 
 for row, key in operatorDict.items():
 	f = dict()
-	f[row] = key
+	f['Operator'] = row
+	f['Crashes'] = key
 	try:
 		db.newFormat.insert(f,check_keys=False)
 	except pymongo.errors.BulkWriteError as e:

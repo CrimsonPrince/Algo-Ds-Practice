@@ -10,17 +10,25 @@ result = cursor.find()
 y = 0
 data = {}
 
-result = cursor.find({},{'_id' : 0})
 
-result = cursor.find({"Plane.type":"Zeppelin L-53 (airship)"})
+#result = cursor.find({},{'_id' : 0})
+#result = cursor.find({'Operator':'Military - U.S. Army'},{'_id' : 0})
+#result = cursor.find({'Operator':'Military - U.S. Army'},{'in_Air' : {'$gte':30}})
 
-pipeline = [{"$match": {"operator": "Aer Lingus"}}, { "$group": {"_id": "$aboard","TotalDeaths": { "$sum": "$total" }}}]
-result = cursor.aggregate(pipeline)
+agr = [ {'$group': {'_id': 1, 'all': { '$sum': '$in_Air' } } } ]
 
-result = cursor.find_one({},{'_id' : 0})
+val = list(db.newFormat.aggregate(agr))
 
-result2 = list(result)
-pprint(result)
+print('The sum of prices is {}'.format(val[0]['all']))
+#result = cursor.find({"Plane.type":"Zeppelin L-53 (airship)"})
+
+#pipeline = [{"$match": {"operator": "Aer Lingus"}}, { "$group": {"_id": "$aboard","TotalDeaths": { "$sum": "$total" }}}]
+#result = cursor.aggregate(pipeline)
+
+#result = cursor.find_one({},{'_id' : 0})
+
+#result2 = list(result)
+#pprint(result2)
 
 #for row in result:
 	#pprint(row)
