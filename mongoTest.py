@@ -32,11 +32,9 @@ for items in records:
 	crash['aboard'] = items['Aboard']
 	crash['summary'] = items['Summary']
 
-	plane['type'] = items['Type']
-	plane['cnin'] = items['cn/In']
-	plane['registration'] = items['Registration']
-	planeList.append(plane)
-	crash['Plane'] = planeList
+	crash['type'] = items['Type']
+	crash['cnin'] = items['cn/In']
+	crash['registration'] = items['Registration']
 	operator['crash'] = crash
 
 	crash['date'] = items['Date']
@@ -50,14 +48,15 @@ for items in records:
 
 	operatorDict[items['Operator']].append(operator)
 
-for val in operatorDict.items():
-	test = dict(crash = val)
+for row, key in operatorDict.items():
+	f = dict()
+	f[row] = key
 	try:
-		db.newFormat.insert_many(dict)
+		db.newFormat.insert(f,check_keys=False)
 	except pymongo.errors.BulkWriteError as e:
 		print(e.details['writeErrors'])
 
-pprint(db.newFormat.find({}, {'_id':0}))
+pprint(db.newFormat.find_one({}, {'_id':0}))
 
 #for i in insertionList:
 	#print(i)
