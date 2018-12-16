@@ -20,12 +20,8 @@ operatorList = []
 
 
 for items in records:
-	if items['Operator'] not in operatorDict:
-		spareDict = {}
-		spareDict['Operator'] = items['Operator']
-		spareDict['Crash'] = list()
-		operatorDict.append(items['Operator'])
-		operatorList.append(spareDict)
+	insertDict['Operator'] = items['Operator']
+	insertDict['Crash']
 	output = db.newFormat.replace_one({"Operator": items['Operator']},insertDict)
 
 
