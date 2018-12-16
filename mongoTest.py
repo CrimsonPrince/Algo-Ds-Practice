@@ -43,10 +43,10 @@ for items in records:
 	crash['in_Air'] = items['Fatalities']
 	crash['on_Ground'] = items['Ground']
 
-	operator['crash'] = crash
+	#operator['crash'] = crash
 
 
-	operatorDict[items['Operator']].append(operator)
+	operatorDict[items['Operator']].append(crash)
 
 for row, key in operatorDict.items():
 	f = dict()
@@ -57,6 +57,3 @@ for row, key in operatorDict.items():
 		print(e.details['writeErrors'])
 
 pprint(db.newFormat.find_one({}, {'_id':0}))
-
-#for i in insertionList:
-	#print(i)
