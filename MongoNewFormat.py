@@ -57,5 +57,4 @@ for row, key in operatorDict.items():
 		db.newFormat.insert(f,check_keys=False)
 	except pymongo.errors.BulkWriteError as e:
 		print(e.details['writeErrors'])
-
-pprint(db.newFormat.find_one({}, {'_id':0}))
+pprint(db.newFormat.find_one())
