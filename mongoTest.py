@@ -11,6 +11,7 @@ if client.drop_database('airplane_crashes'):
 
 df = pd.read_csv("Airplane_Crashes_and_Fatalities_Since_1908.csv") #csv file which you want to import
 df['Operator'] = df['Operator'].fillna("Unknown")
+df['Fatalities'] = df['Fatalities'].fillna(0)
 records = df.to_dict(orient = 'records')
 operatorDict = {}
 i = 0
@@ -40,7 +41,7 @@ for items in records:
 	crash['date'] = items['Date']
 	crash['Time'] = items['Time']
 	crash['location'] = items['Location']
-	crash['in_Air'] = items['Fatalities']
+	crash['in_Air'] = int(items['Fatalities'])
 	crash['on_Ground'] = items['Ground']
 
 	#operator['crash'] = crash
